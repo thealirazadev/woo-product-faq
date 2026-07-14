@@ -24,6 +24,14 @@ define( 'WPFAQ_VERSION', '1.0.0' );
 define( 'WPFAQ_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WPFAQ_URL', plugin_dir_url( __FILE__ ) );
 
+$wpfaq_functions_file = WPFAQ_PATH . 'includes/wpfaq-functions.php';
+
+if ( ! is_readable( $wpfaq_functions_file ) ) {
+	return;
+}
+
+require_once $wpfaq_functions_file;
+
 /**
  * Checks whether WooCommerce is available.
  *
@@ -41,7 +49,12 @@ function wpfaq_has_woocommerce() {
 function wpfaq_has_active_woocommerce() {
 	$active_plugins = get_option( 'active_plugins', array() );
 
-	if ( is_array( $active_plugins ) && in_array( 'woocommerce/woocommerce.php', $active_plugins, true ) ) {
+	if ( ! is_array( $active_plugins ) ) {
+		wpfaq_log( 'The active plugin list had an unexpected shape.' );
+		$active_plugins = array();
+	}
+
+	if ( in_array( 'woocommerce/woocommerce.php', $active_plugins, true ) ) {
 		return true;
 	}
 
@@ -51,7 +64,12 @@ function wpfaq_has_active_woocommerce() {
 
 	$network_plugins = get_site_option( 'active_sitewide_plugins', array() );
 
-	return is_array( $network_plugins ) && isset( $network_plugins['woocommerce/woocommerce.php'] );
+	if ( ! is_array( $network_plugins ) ) {
+		wpfaq_log( 'The network plugin list had an unexpected shape.' );
+		return false;
+	}
+
+	return isset( $network_plugins['woocommerce/woocommerce.php'] );
 }
 
 /**
@@ -64,16 +82,22 @@ function wpfaq_activate() {
 		return;
 	}
 
+	wpfaq_log( 'Plugin activation was rejected because WooCommerce was unavailable.' );
+
 	if ( ! function_exists( 'deactivate_plugins' ) ) {
 		$wpfaq_plugin_functions = ABSPATH . 'wp-admin/includes/plugin.php';
 
 		if ( is_readable( $wpfaq_plugin_functions ) ) {
 			require_once $wpfaq_plugin_functions;
+		} else {
+			wpfaq_log( 'The WordPress plugin functions file was unavailable during activation.' );
 		}
 	}
 
 	if ( function_exists( 'deactivate_plugins' ) ) {
 		deactivate_plugins( plugin_basename( __FILE__ ), true );
+	} else {
+		wpfaq_log( 'WordPress could not deactivate the plugin after a rejected activation.' );
 	}
 
 	add_action( 'admin_notices', 'wpfaq_render_dependency_notice' );
@@ -88,6 +112,8 @@ function wpfaq_check_woocommerce() {
 	if ( wpfaq_has_woocommerce() ) {
 		return;
 	}
+
+	wpfaq_log( 'WooCommerce was unavailable during plugin bootstrap.' );
 
 	add_action( 'admin_notices', 'wpfaq_render_dependency_notice' );
 }
@@ -112,3 +138,4 @@ function wpfaq_render_dependency_notice() {
 
 register_activation_hook( __FILE__, 'wpfaq_activate' );
 add_action( 'plugins_loaded', 'wpfaq_check_woocommerce', 1 );
+add_action( 'init', 'wpfaq_load_textdomain' );
