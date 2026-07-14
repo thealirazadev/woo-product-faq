@@ -136,6 +136,46 @@ function wpfaq_render_dependency_notice() {
 	<?php
 }
 
+/**
+ * Loads and starts plugin components.
+ *
+ * @return void
+ */
+function wpfaq_boot_plugin() {
+	if ( ! wpfaq_has_woocommerce() ) {
+		return;
+	}
+
+	$wpfaq_class_files = array(
+		WPFAQ_PATH . 'includes/class-wpfaq-admin.php',
+		WPFAQ_PATH . 'includes/class-wpfaq-plugin.php',
+	);
+
+	foreach ( $wpfaq_class_files as $wpfaq_class_file ) {
+		if ( ! is_readable( $wpfaq_class_file ) ) {
+			wpfaq_log( 'A required plugin class file was unavailable.', array( 'file' => basename( $wpfaq_class_file ) ) );
+			return;
+		}
+
+		require_once $wpfaq_class_file;
+	}
+
+	if ( ! class_exists( 'WPFAQ_Plugin' ) || ! class_exists( 'WPFAQ_Admin' ) ) {
+		wpfaq_log( 'A required plugin class could not be loaded.' );
+		return;
+	}
+
+	$wpfaq_plugin = WPFAQ_Plugin::get_instance();
+
+	if ( ! $wpfaq_plugin instanceof WPFAQ_Plugin ) {
+		wpfaq_log( 'The plugin orchestrator could not be initialized.' );
+		return;
+	}
+
+	$wpfaq_plugin->register_hooks();
+}
+
 register_activation_hook( __FILE__, 'wpfaq_activate' );
 add_action( 'plugins_loaded', 'wpfaq_check_woocommerce', 1 );
+add_action( 'plugins_loaded', 'wpfaq_boot_plugin', 20 );
 add_action( 'init', 'wpfaq_load_textdomain' );
