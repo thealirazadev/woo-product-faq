@@ -1,0 +1,32 @@
+{
+    "name": "thealirazadev/woo-product-faq",
+    "description": "Per-product FAQs and custom tabs for WooCommerce.",
+    "type": "wordpress-plugin",
+    "version": "1.0.0",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.4"
+    },
+    "require-dev": {
+        "phpcompatibility/phpcompatibility-wp": "2.1.8",
+        "phpunit/phpunit": "9.6.35",
+        "squizlabs/php_codesniffer": "3.13.5",
+        "wp-coding-standards/wpcs": "3.3.0",
+        "yoast/phpunit-polyfills": "4.0.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": false
+        },
+        "platform": {
+            "php": "7.4.0"
+        },
+        "sort-packages": true
+    },
+    "scripts": {
+        "build": "wp dist-archive . build/woo-product-faq.zip --create-target-dir",
+        "lint": "phpcs",
+        "lint:fix": "phpcbf",
+        "test": "phpunit"
+    }
+}
