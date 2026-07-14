@@ -42,6 +42,29 @@ function wpfaq_log( $message, $context = array() ) {
 }
 
 /**
+ * Loads a plugin template file, exposing $args to it.
+ *
+ * @param string $template_name Template file name relative to templates/.
+ * @param array  $args          Variables the template can read from $args.
+ * @return void
+ */
+function wpfaq_get_template( $template_name, $args = array() ) {
+	$template_name = ltrim( (string) $template_name, '/' );
+	$template_path = WPFAQ_PATH . 'templates/' . $template_name;
+
+	if ( ! is_readable( $template_path ) ) {
+		wpfaq_log( 'A template file was unavailable.', array( 'template' => $template_name ) );
+		return;
+	}
+
+	if ( ! is_array( $args ) ) {
+		$args = array();
+	}
+
+	include $template_path;
+}
+
+/**
  * Loads the plugin translation catalog.
  *
  * @return void

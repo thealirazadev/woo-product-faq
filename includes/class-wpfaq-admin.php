@@ -97,10 +97,56 @@ final class WPFAQ_Admin {
 		}
 		?>
 		<div id="wpfaq_product_data" class="panel woocommerce_options_panel hidden">
-			<div class="options_group">
+			<div class="options_group wpfaq-rows-group">
 				<h2><?php esc_html_e( 'FAQ', 'woo-product-faq' ); ?></h2>
+				<?php $this->render_faq_rows( $post->ID ); ?>
 			</div>
 		</div>
+		<?php
+	}
+
+	/**
+	 * Renders the repeatable FAQ question/answer rows.
+	 *
+	 * @param int $post_id Product post ID.
+	 * @return void
+	 */
+	private function render_faq_rows( $post_id ) {
+		$wpfaq_faqs = get_post_meta( $post_id, '_wpfaq_faqs', true );
+
+		if ( ! is_array( $wpfaq_faqs ) ) {
+			$wpfaq_faqs = array();
+		}
+		?>
+		<p class="wpfaq-empty-state" role="status"<?php echo empty( $wpfaq_faqs ) ? '' : ' hidden'; ?>>
+			<?php esc_html_e( 'No FAQs yet. Add your first question.', 'woo-product-faq' ); ?>
+		</p>
+		<div class="wpfaq-rows" data-wpfaq-rows="faq">
+			<?php
+			foreach ( array_values( $wpfaq_faqs ) as $wpfaq_index => $wpfaq_faq ) {
+				if ( ! is_array( $wpfaq_faq ) ) {
+					continue;
+				}
+
+				wpfaq_get_template(
+					'admin-faq-row.php',
+					array(
+						'index'    => $wpfaq_index,
+						'question' => isset( $wpfaq_faq['question'] ) ? $wpfaq_faq['question'] : '',
+						'answer'   => isset( $wpfaq_faq['answer'] ) ? $wpfaq_faq['answer'] : '',
+					)
+				);
+			}
+			?>
+		</div>
+		<p class="wpfaq-row-actions">
+			<button type="button" class="button wpfaq-add-row" data-wpfaq-action="add-faq">
+				<?php esc_html_e( 'Add FAQ', 'woo-product-faq' ); ?>
+			</button>
+		</p>
+		<script type="text/html" id="wpfaq-faq-row-template">
+			<?php wpfaq_get_template( 'admin-faq-row.php', array( 'index' => '__INDEX__' ) ); ?>
+		</script>
 		<?php
 	}
 }
