@@ -15,6 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 final class WPFAQ_Admin {
 
 	/**
+	 * Maximum number of FAQ rows persisted per product.
+	 *
+	 * @var int
+	 */
+	const MAX_ROWS = 50;
+
+	/**
 	 * Whether hooks have been registered.
 	 *
 	 * @var bool
@@ -34,6 +41,7 @@ final class WPFAQ_Admin {
 		add_filter( 'woocommerce_product_data_tabs', array( $this, 'add_product_data_tab' ) );
 		add_action( 'woocommerce_product_data_panels', array( $this, 'render_product_data_panel' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+		add_action( 'woocommerce_process_product_meta', array( $this, 'save' ) );
 		$this->hooks_registered = true;
 	}
 
@@ -124,6 +132,7 @@ final class WPFAQ_Admin {
 		}
 		?>
 		<div id="wpfaq_product_data" class="panel woocommerce_options_panel hidden">
+			<?php wp_nonce_field( 'wpfaq_save_faqs', 'wpfaq_faqs_nonce' ); ?>
 			<div class="options_group wpfaq-rows-group">
 				<h2><?php esc_html_e( 'FAQ', 'woo-product-faq' ); ?></h2>
 				<?php $this->render_faq_rows( $post->ID ); ?>
@@ -175,5 +184,88 @@ final class WPFAQ_Admin {
 			<?php wpfaq_get_template( 'admin-faq-row.php', array( 'index' => '__INDEX__' ) ); ?>
 		</script>
 		<?php
+	}
+
+	/**
+	 * Saves FAQ rows to post meta on product save.
+	 *
+	 * Verifies the nonce and edit capability before touching meta; on
+	 * failure it silently leaves stored meta unchanged (no fatal, no
+	 * partial write), matching how the rest of the product save behaves
+	 * for other plugins' metabox fields.
+	 *
+	 * @param int $post_id Product post ID being saved.
+	 * @return void
+	 */
+	public function save( $post_id ) {
+		$post_id = absint( $post_id );
+
+		if ( ! $post_id ) {
+			return;
+		}
+
+		if ( ! isset( $_POST['wpfaq_faqs_nonce'] ) ) {
+			return;
+		}
+
+		$wpfaq_nonce = sanitize_text_field( wp_unslash( $_POST['wpfaq_faqs_nonce'] ) );
+
+		if ( ! wp_verify_nonce( $wpfaq_nonce, 'wpfaq_save_faqs' ) ) {
+			wpfaq_log( 'FAQ save was rejected because the nonce was invalid.', array( 'post_id' => $post_id ) );
+			return;
+		}
+
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			wpfaq_log( 'FAQ save was rejected because the user lacked edit_post capability.', array( 'post_id' => $post_id ) );
+			return;
+		}
+
+		$wpfaq_raw_rows = array();
+
+		if ( isset( $_POST['wpfaq_faqs'] ) && is_array( $_POST['wpfaq_faqs'] ) ) {
+			$wpfaq_raw_rows = wp_unslash( $_POST['wpfaq_faqs'] );
+		}
+
+		$wpfaq_sanitized_rows = $this->sanitize_faq_rows( $wpfaq_raw_rows );
+		$wpfaq_updated        = update_post_meta( $post_id, '_wpfaq_faqs', $wpfaq_sanitized_rows );
+
+		if ( false === $wpfaq_updated && get_post_meta( $post_id, '_wpfaq_faqs', true ) !== $wpfaq_sanitized_rows ) {
+			wpfaq_log( 'FAQ rows failed to save.', array( 'post_id' => $post_id ) );
+		}
+	}
+
+	/**
+	 * Sanitizes raw FAQ rows: drops blank rows, sanitizes fields, reindexes,
+	 * and caps the row count to prevent abuse.
+	 *
+	 * @param array $wpfaq_raw_rows Raw, unslashed row data keyed by submitted index.
+	 * @return array List of ['question' => string, 'answer' => string].
+	 */
+	private function sanitize_faq_rows( $wpfaq_raw_rows ) {
+		$wpfaq_sanitized = array();
+
+		foreach ( $wpfaq_raw_rows as $wpfaq_raw_row ) {
+			if ( count( $wpfaq_sanitized ) >= self::MAX_ROWS ) {
+				break;
+			}
+
+			if ( ! is_array( $wpfaq_raw_row ) ) {
+				continue;
+			}
+
+			$wpfaq_question = isset( $wpfaq_raw_row['question'] ) ? sanitize_text_field( $wpfaq_raw_row['question'] ) : '';
+			$wpfaq_answer   = isset( $wpfaq_raw_row['answer'] ) ? wp_kses_post( $wpfaq_raw_row['answer'] ) : '';
+
+			if ( '' === trim( $wpfaq_question ) && '' === trim( wp_strip_all_tags( $wpfaq_answer ) ) ) {
+				continue;
+			}
+
+			$wpfaq_sanitized[] = array(
+				'question' => $wpfaq_question,
+				'answer'   => $wpfaq_answer,
+			);
+		}
+
+		return array_values( $wpfaq_sanitized );
 	}
 }
