@@ -65,6 +65,41 @@ function wpfaq_get_template( $template_name, $args = array() ) {
 }
 
 /**
+ * Reads the saved FAQ rows for a product.
+ *
+ * @param int $product_id Product post ID.
+ * @return array List of ['question' => string, 'answer' => string], empty when none saved.
+ */
+function wpfaq_get_faqs( $product_id ) {
+	$product_id = absint( $product_id );
+
+	if ( ! $product_id ) {
+		return array();
+	}
+
+	$wpfaq_faqs = get_post_meta( $product_id, '_wpfaq_faqs', true );
+
+	if ( ! is_array( $wpfaq_faqs ) ) {
+		return array();
+	}
+
+	$wpfaq_valid_faqs = array();
+
+	foreach ( $wpfaq_faqs as $wpfaq_faq ) {
+		if ( ! is_array( $wpfaq_faq ) || ! isset( $wpfaq_faq['question'], $wpfaq_faq['answer'] ) ) {
+			continue;
+		}
+
+		$wpfaq_valid_faqs[] = array(
+			'question' => (string) $wpfaq_faq['question'],
+			'answer'   => (string) $wpfaq_faq['answer'],
+		);
+	}
+
+	return $wpfaq_valid_faqs;
+}
+
+/**
  * Loads the plugin translation catalog.
  *
  * @return void
