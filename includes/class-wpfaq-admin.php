@@ -33,7 +33,34 @@ final class WPFAQ_Admin {
 
 		add_filter( 'woocommerce_product_data_tabs', array( $this, 'add_product_data_tab' ) );
 		add_action( 'woocommerce_product_data_panels', array( $this, 'render_product_data_panel' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		$this->hooks_registered = true;
+	}
+
+	/**
+	 * Enqueues the repeater JS on the product edit screen only.
+	 *
+	 * @param string $hook_suffix Current admin page hook suffix.
+	 * @return void
+	 */
+	public function enqueue_scripts( $hook_suffix ) {
+		if ( ! in_array( $hook_suffix, array( 'post.php', 'post-new.php' ), true ) ) {
+			return;
+		}
+
+		global $post;
+
+		if ( ! $post instanceof WP_Post || 'product' !== $post->post_type ) {
+			return;
+		}
+
+		wp_enqueue_script(
+			'wpfaq-admin',
+			WPFAQ_URL . 'assets/js/admin.js',
+			array( 'jquery', 'jquery-ui-sortable' ),
+			WPFAQ_VERSION,
+			true
+		);
 	}
 
 	/**
