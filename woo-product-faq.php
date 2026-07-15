@@ -148,6 +148,7 @@ function wpfaq_boot_plugin() {
 
 	$wpfaq_class_files = array(
 		WPFAQ_PATH . 'includes/class-wpfaq-admin.php',
+		WPFAQ_PATH . 'includes/class-wpfaq-frontend.php',
 		WPFAQ_PATH . 'includes/class-wpfaq-plugin.php',
 	);
 
@@ -160,7 +161,7 @@ function wpfaq_boot_plugin() {
 		require_once $wpfaq_class_file;
 	}
 
-	if ( ! class_exists( 'WPFAQ_Plugin' ) || ! class_exists( 'WPFAQ_Admin' ) ) {
+	if ( ! class_exists( 'WPFAQ_Plugin' ) || ! class_exists( 'WPFAQ_Admin' ) || ! class_exists( 'WPFAQ_Frontend' ) ) {
 		wpfaq_log( 'A required plugin class could not be loaded.' );
 		return;
 	}

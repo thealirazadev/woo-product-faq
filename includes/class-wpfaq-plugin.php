@@ -29,6 +29,13 @@ final class WPFAQ_Plugin {
 	private $admin;
 
 	/**
+	 * Frontend component.
+	 *
+	 * @var WPFAQ_Frontend
+	 */
+	private $frontend;
+
+	/**
 	 * Whether component hooks have been registered.
 	 *
 	 * @var bool
@@ -52,7 +59,8 @@ final class WPFAQ_Plugin {
 	 * Creates plugin components.
 	 */
 	private function __construct() {
-		$this->admin = new WPFAQ_Admin();
+		$this->admin    = new WPFAQ_Admin();
+		$this->frontend = new WPFAQ_Frontend();
 	}
 
 	/**
@@ -66,6 +74,7 @@ final class WPFAQ_Plugin {
 		}
 
 		$this->admin->register_hooks();
+		$this->frontend->register_hooks();
 		$this->hooks_registered = true;
 	}
 }
