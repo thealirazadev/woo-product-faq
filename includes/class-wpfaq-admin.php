@@ -304,6 +304,19 @@ final class WPFAQ_Admin {
 		$wpfaq_location     = 'after_summary' === $wpfaq_location_raw ? 'after_summary' : 'tab';
 
 		update_post_meta( $post_id, '_wpfaq_display_location', $wpfaq_location );
+
+		$wpfaq_raw_tabs = array();
+
+		if ( isset( $_POST['wpfaq_custom_tabs'] ) && is_array( $_POST['wpfaq_custom_tabs'] ) ) {
+			$wpfaq_raw_tabs = wp_unslash( $_POST['wpfaq_custom_tabs'] );
+		}
+
+		$wpfaq_sanitized_tabs = $this->sanitize_custom_tabs( $wpfaq_raw_tabs );
+		$wpfaq_tabs_updated   = update_post_meta( $post_id, '_wpfaq_custom_tabs', $wpfaq_sanitized_tabs );
+
+		if ( false === $wpfaq_tabs_updated && get_post_meta( $post_id, '_wpfaq_custom_tabs', true ) !== $wpfaq_sanitized_tabs ) {
+			wpfaq_log( 'Custom tabs failed to save.', array( 'post_id' => $post_id ) );
+		}
 	}
 
 	/**
@@ -335,6 +348,41 @@ final class WPFAQ_Admin {
 			$wpfaq_sanitized[] = array(
 				'question' => $wpfaq_question,
 				'answer'   => $wpfaq_answer,
+			);
+		}
+
+		return array_values( $wpfaq_sanitized );
+	}
+
+	/**
+	 * Sanitizes raw custom-tab rows: drops rows with an empty title or empty
+	 * content, sanitizes fields, reindexes, and caps the row count.
+	 *
+	 * @param array $wpfaq_raw_tabs Raw, unslashed row data keyed by submitted index.
+	 * @return array List of ['title' => string, 'content' => string].
+	 */
+	private function sanitize_custom_tabs( $wpfaq_raw_tabs ) {
+		$wpfaq_sanitized = array();
+
+		foreach ( $wpfaq_raw_tabs as $wpfaq_raw_tab ) {
+			if ( count( $wpfaq_sanitized ) >= self::MAX_ROWS ) {
+				break;
+			}
+
+			if ( ! is_array( $wpfaq_raw_tab ) ) {
+				continue;
+			}
+
+			$wpfaq_title   = isset( $wpfaq_raw_tab['title'] ) ? sanitize_text_field( $wpfaq_raw_tab['title'] ) : '';
+			$wpfaq_content = isset( $wpfaq_raw_tab['content'] ) ? wp_kses_post( $wpfaq_raw_tab['content'] ) : '';
+
+			if ( '' === trim( $wpfaq_title ) || '' === trim( wp_strip_all_tags( $wpfaq_content ) ) ) {
+				continue;
+			}
+
+			$wpfaq_sanitized[] = array(
+				'title'   => $wpfaq_title,
+				'content' => $wpfaq_content,
 			);
 		}
 

@@ -122,6 +122,41 @@ function wpfaq_get_display_location( $product_id ) {
 }
 
 /**
+ * Reads the saved custom tabs for a product.
+ *
+ * @param int $product_id Product post ID.
+ * @return array List of ['title' => string, 'content' => string], empty when none saved.
+ */
+function wpfaq_get_custom_tabs( $product_id ) {
+	$product_id = absint( $product_id );
+
+	if ( ! $product_id ) {
+		return array();
+	}
+
+	$wpfaq_custom_tabs = get_post_meta( $product_id, '_wpfaq_custom_tabs', true );
+
+	if ( ! is_array( $wpfaq_custom_tabs ) ) {
+		return array();
+	}
+
+	$wpfaq_valid_tabs = array();
+
+	foreach ( $wpfaq_custom_tabs as $wpfaq_tab ) {
+		if ( ! is_array( $wpfaq_tab ) || ! isset( $wpfaq_tab['title'], $wpfaq_tab['content'] ) ) {
+			continue;
+		}
+
+		$wpfaq_valid_tabs[] = array(
+			'title'   => (string) $wpfaq_tab['title'],
+			'content' => (string) $wpfaq_tab['content'],
+		);
+	}
+
+	return $wpfaq_valid_tabs;
+}
+
+/**
  * Loads the plugin translation catalog.
  *
  * @return void
