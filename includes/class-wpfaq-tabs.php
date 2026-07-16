@@ -32,6 +32,7 @@ final class WPFAQ_Tabs {
 		}
 
 		add_filter( 'woocommerce_product_tabs', array( $this, 'add_tabs' ) );
+		add_filter( 'woocommerce_product_tabs', array( $this, 'add_custom_tabs' ) );
 		$this->hooks_registered = true;
 	}
 
@@ -70,6 +71,51 @@ final class WPFAQ_Tabs {
 		);
 
 		return $tabs;
+	}
+
+	/**
+	 * Appends saved custom tabs to the product tabs, in stored order.
+	 *
+	 * @param array $tabs WooCommerce product tabs.
+	 * @return array
+	 */
+	public function add_custom_tabs( $tabs ) {
+		if ( ! is_array( $tabs ) ) {
+			wpfaq_log( 'Product tabs had an unexpected shape.' );
+			return array();
+		}
+
+		$wpfaq_product_id = get_the_ID();
+
+		if ( ! $wpfaq_product_id ) {
+			return $tabs;
+		}
+
+		$wpfaq_custom_tabs = wpfaq_get_custom_tabs( $wpfaq_product_id );
+
+		foreach ( array_values( $wpfaq_custom_tabs ) as $wpfaq_index => $wpfaq_tab ) {
+			$tabs[ 'wpfaq_custom_tab_' . $wpfaq_index ] = array(
+				'title'         => $wpfaq_tab['title'],
+				'priority'      => 40 + $wpfaq_index,
+				'callback'      => array( $this, 'render_custom_tab' ),
+				'wpfaq_content' => $wpfaq_tab['content'],
+			);
+		}
+
+		return $tabs;
+	}
+
+	/**
+	 * Renders one custom tab's content.
+	 *
+	 * @param string $key Tab key (unused, required by the WooCommerce callback signature).
+	 * @param array  $tab Tab data, including the plugin's 'wpfaq_content' key.
+	 * @return void
+	 */
+	public function render_custom_tab( $key, $tab ) {
+		$wpfaq_content = is_array( $tab ) && isset( $tab['wpfaq_content'] ) ? $tab['wpfaq_content'] : '';
+
+		wpfaq_get_template( 'custom-tab.php', array( 'content' => $wpfaq_content ) );
 	}
 
 	/**
