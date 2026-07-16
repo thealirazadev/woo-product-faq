@@ -100,6 +100,28 @@ function wpfaq_get_faqs( $product_id ) {
 }
 
 /**
+ * Reads the saved display location for a product.
+ *
+ * @param int $product_id Product post ID.
+ * @return string Either 'tab' or 'after_summary'; defaults to 'tab'.
+ */
+function wpfaq_get_display_location( $product_id ) {
+	$product_id = absint( $product_id );
+
+	if ( ! $product_id ) {
+		return 'tab';
+	}
+
+	$wpfaq_location = get_post_meta( $product_id, '_wpfaq_display_location', true );
+
+	if ( 'after_summary' === $wpfaq_location ) {
+		return 'after_summary';
+	}
+
+	return 'tab';
+}
+
+/**
  * Loads the plugin translation catalog.
  *
  * @return void

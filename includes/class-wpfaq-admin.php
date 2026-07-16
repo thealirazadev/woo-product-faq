@@ -133,6 +133,22 @@ final class WPFAQ_Admin {
 		?>
 		<div id="wpfaq_product_data" class="panel woocommerce_options_panel hidden">
 			<?php wp_nonce_field( 'wpfaq_save_faqs', 'wpfaq_faqs_nonce' ); ?>
+			<div class="options_group">
+				<?php
+				woocommerce_wp_select(
+					array(
+						'id'      => 'wpfaq_display_location',
+						'name'    => 'wpfaq_display_location',
+						'label'   => __( 'Display location', 'woo-product-faq' ),
+						'value'   => wpfaq_get_display_location( $post->ID ),
+						'options' => array(
+							'tab'           => __( 'Product tab', 'woo-product-faq' ),
+							'after_summary' => __( 'After product summary', 'woo-product-faq' ),
+						),
+					)
+				);
+				?>
+			</div>
 			<div class="options_group wpfaq-rows-group">
 				<h2><?php esc_html_e( 'FAQ', 'woo-product-faq' ); ?></h2>
 				<?php $this->render_faq_rows( $post->ID ); ?>
@@ -232,6 +248,13 @@ final class WPFAQ_Admin {
 		if ( false === $wpfaq_updated && get_post_meta( $post_id, '_wpfaq_faqs', true ) !== $wpfaq_sanitized_rows ) {
 			wpfaq_log( 'FAQ rows failed to save.', array( 'post_id' => $post_id ) );
 		}
+
+		$wpfaq_location_raw = isset( $_POST['wpfaq_display_location'] )
+			? sanitize_text_field( wp_unslash( $_POST['wpfaq_display_location'] ) )
+			: 'tab';
+		$wpfaq_location     = 'after_summary' === $wpfaq_location_raw ? 'after_summary' : 'tab';
+
+		update_post_meta( $post_id, '_wpfaq_display_location', $wpfaq_location );
 	}
 
 	/**
