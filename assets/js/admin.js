@@ -21,8 +21,16 @@
 			row: '[data-wpfaq-row="faq"]',
 			addButton: '[data-wpfaq-action="add-faq"]',
 			template: '#wpfaq-faq-row-template',
-			emptyState: '.wpfaq-rows-group .wpfaq-empty-state',
+			emptyState: '.wpfaq-empty-state',
 			fieldPrefix: 'wpfaq_faqs',
+		},
+		customTab: {
+			list: '[data-wpfaq-rows="custom-tab"]',
+			row: '[data-wpfaq-row="custom-tab"]',
+			addButton: '[data-wpfaq-action="add-custom-tab"]',
+			template: '#wpfaq-custom-tab-row-template',
+			emptyState: '.wpfaq-empty-state',
+			fieldPrefix: 'wpfaq_custom_tabs',
 		},
 	};
 
@@ -62,7 +70,7 @@
 			reindexRow( $( this ), config.fieldPrefix, index );
 		} );
 
-		var $emptyState = $( config.emptyState );
+		var $emptyState = $list.closest( '.wpfaq-rows-group' ).find( config.emptyState );
 
 		if ( $emptyState.length ) {
 			$emptyState.prop( 'hidden', $list.children( config.row ).length > 0 );

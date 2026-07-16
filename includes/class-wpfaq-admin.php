@@ -153,6 +153,10 @@ final class WPFAQ_Admin {
 				<h2><?php esc_html_e( 'FAQ', 'woo-product-faq' ); ?></h2>
 				<?php $this->render_faq_rows( $post->ID ); ?>
 			</div>
+			<div class="options_group wpfaq-rows-group">
+				<h2><?php esc_html_e( 'Custom tabs', 'woo-product-faq' ); ?></h2>
+				<?php $this->render_custom_tab_rows( $post->ID ); ?>
+			</div>
 		</div>
 		<?php
 	}
@@ -198,6 +202,51 @@ final class WPFAQ_Admin {
 		</p>
 		<script type="text/html" id="wpfaq-faq-row-template">
 			<?php wpfaq_get_template( 'admin-faq-row.php', array( 'index' => '__INDEX__' ) ); ?>
+		</script>
+		<?php
+	}
+
+	/**
+	 * Renders the repeatable custom-tab title/content rows.
+	 *
+	 * @param int $post_id Product post ID.
+	 * @return void
+	 */
+	private function render_custom_tab_rows( $post_id ) {
+		$wpfaq_custom_tabs = get_post_meta( $post_id, '_wpfaq_custom_tabs', true );
+
+		if ( ! is_array( $wpfaq_custom_tabs ) ) {
+			$wpfaq_custom_tabs = array();
+		}
+		?>
+		<p class="wpfaq-empty-state" role="status"<?php echo empty( $wpfaq_custom_tabs ) ? '' : ' hidden'; ?>>
+			<?php esc_html_e( 'No custom tabs yet. Add your first tab.', 'woo-product-faq' ); ?>
+		</p>
+		<div class="wpfaq-rows" data-wpfaq-rows="custom-tab">
+			<?php
+			foreach ( array_values( $wpfaq_custom_tabs ) as $wpfaq_index => $wpfaq_tab ) {
+				if ( ! is_array( $wpfaq_tab ) ) {
+					continue;
+				}
+
+				wpfaq_get_template(
+					'admin-custom-tab-row.php',
+					array(
+						'index'   => $wpfaq_index,
+						'title'   => isset( $wpfaq_tab['title'] ) ? $wpfaq_tab['title'] : '',
+						'content' => isset( $wpfaq_tab['content'] ) ? $wpfaq_tab['content'] : '',
+					)
+				);
+			}
+			?>
+		</div>
+		<p class="wpfaq-row-actions">
+			<button type="button" class="button wpfaq-add-row" data-wpfaq-action="add-custom-tab">
+				<?php esc_html_e( 'Add custom tab', 'woo-product-faq' ); ?>
+			</button>
+		</p>
+		<script type="text/html" id="wpfaq-custom-tab-row-template">
+			<?php wpfaq_get_template( 'admin-custom-tab-row.php', array( 'index' => '__INDEX__' ) ); ?>
 		</script>
 		<?php
 	}
