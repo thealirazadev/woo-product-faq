@@ -47,6 +47,15 @@
 	background-color: rgba( 0, 0, 0, 0.06 );
 }
 
+.wpfaq-accordion__trigger:focus {
+	outline: 2px solid currentColor;
+	outline-offset: -2px;
+}
+
+.wpfaq-accordion__trigger:focus:not( :focus-visible ) {
+	outline: none;
+}
+
 .wpfaq-accordion__trigger:focus-visible {
 	outline: 2px solid currentColor;
 	outline-offset: -2px;
