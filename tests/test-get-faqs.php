@@ -110,4 +110,44 @@ class WPFAQ_Get_Faqs_Test extends WC_Unit_Test_Case {
 	public function test_returns_empty_array_for_invalid_product_id() {
 		$this->assertSame( array(), wpfaq_get_faqs( 0 ) );
 	}
+
+	/**
+	 * A product with no saved display location defaults to 'tab'.
+	 *
+	 * @return void
+	 */
+	public function test_display_location_defaults_to_tab() {
+		$this->assertSame( 'tab', wpfaq_get_display_location( $this->product_id ) );
+	}
+
+	/**
+	 * A saved 'after_summary' value is returned as-is.
+	 *
+	 * @return void
+	 */
+	public function test_display_location_returns_after_summary_when_saved() {
+		update_post_meta( $this->product_id, '_wpfaq_display_location', 'after_summary' );
+
+		$this->assertSame( 'after_summary', wpfaq_get_display_location( $this->product_id ) );
+	}
+
+	/**
+	 * An invalid stored value falls back to 'tab'.
+	 *
+	 * @return void
+	 */
+	public function test_display_location_falls_back_to_tab_for_invalid_value() {
+		update_post_meta( $this->product_id, '_wpfaq_display_location', 'not-a-real-location' );
+
+		$this->assertSame( 'tab', wpfaq_get_display_location( $this->product_id ) );
+	}
+
+	/**
+	 * A zero or invalid product id defaults to 'tab'.
+	 *
+	 * @return void
+	 */
+	public function test_display_location_defaults_to_tab_for_invalid_product_id() {
+		$this->assertSame( 'tab', wpfaq_get_display_location( 0 ) );
+	}
 }
