@@ -36,6 +36,13 @@ final class WPFAQ_Plugin {
 	private $frontend;
 
 	/**
+	 * Product tabs component.
+	 *
+	 * @var WPFAQ_Tabs
+	 */
+	private $tabs;
+
+	/**
 	 * Whether component hooks have been registered.
 	 *
 	 * @var bool
@@ -61,6 +68,7 @@ final class WPFAQ_Plugin {
 	private function __construct() {
 		$this->admin    = new WPFAQ_Admin();
 		$this->frontend = new WPFAQ_Frontend();
+		$this->tabs     = new WPFAQ_Tabs();
 	}
 
 	/**
@@ -75,6 +83,7 @@ final class WPFAQ_Plugin {
 
 		$this->admin->register_hooks();
 		$this->frontend->register_hooks();
+		$this->tabs->register_hooks();
 		$this->hooks_registered = true;
 	}
 }
