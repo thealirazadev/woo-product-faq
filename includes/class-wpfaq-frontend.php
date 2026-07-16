@@ -79,6 +79,10 @@ final class WPFAQ_Frontend {
 			return;
 		}
 
+		if ( 'after_summary' !== wpfaq_get_display_location( $wpfaq_product_id ) ) {
+			return;
+		}
+
 		$wpfaq_faqs = wpfaq_get_faqs( $wpfaq_product_id );
 
 		if ( empty( $wpfaq_faqs ) ) {
