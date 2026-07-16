@@ -20,6 +20,14 @@
 	<rule ref="WordPress-Docs"/>
 	<rule ref="PHPCompatibilityWP"/>
 
+	<rule ref="WordPress.Files.FileName">
+		<properties>
+			<property name="custom_test_classes" type="array">
+				<element value="WC_Unit_Test_Case"/>
+			</property>
+		</properties>
+	</rule>
+
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
