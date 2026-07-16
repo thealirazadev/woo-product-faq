@@ -32,6 +32,7 @@ final class WPFAQ_Frontend {
 		}
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+		add_action( 'woocommerce_after_single_product_summary', array( $this, 'render_after_summary' ), 15 );
 		$this->hooks_registered = true;
 	}
 
@@ -58,6 +59,39 @@ final class WPFAQ_Frontend {
 			array(),
 			WPFAQ_VERSION,
 			true
+		);
+	}
+
+	/**
+	 * Renders the FAQ accordion after the product summary.
+	 *
+	 * @return void
+	 */
+	public function render_after_summary() {
+		if ( ! function_exists( 'is_product' ) || ! is_product() ) {
+			return;
+		}
+
+		$wpfaq_product_id = get_the_ID();
+
+		if ( ! $wpfaq_product_id ) {
+			wpfaq_log( 'The FAQ accordion could not resolve a product id after the summary.' );
+			return;
+		}
+
+		$wpfaq_faqs = wpfaq_get_faqs( $wpfaq_product_id );
+
+		if ( empty( $wpfaq_faqs ) ) {
+			return;
+		}
+
+		wpfaq_get_template(
+			'faq-accordion.php',
+			array(
+				'faqs'       => $wpfaq_faqs,
+				'show_title' => true,
+				'product_id' => $wpfaq_product_id,
+			)
 		);
 	}
 }
