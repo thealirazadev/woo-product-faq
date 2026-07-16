@@ -1,0 +1,82 @@
+/**
+ * FAQ accordion styles.
+ *
+ * Inherits the theme's font, size, and color; only structure and interaction
+ * states are styled here. All spacing uses relative units.
+ */
+
+.wpfaq-accordion {
+	margin: 2em 0;
+	width: 100%;
+}
+
+.wpfaq-accordion__title {
+	margin: 0 0 0.75em;
+}
+
+.wpfaq-accordion__item {
+	border-bottom: 1px solid currentColor;
+	border-bottom-color: rgba( 0, 0, 0, 0.1 );
+}
+
+.wpfaq-accordion__heading {
+	margin: 0;
+	font-size: 1em;
+}
+
+.wpfaq-accordion__trigger {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1em;
+	width: 100%;
+	padding: 0.75em 1em;
+	background: none;
+	border: none;
+	color: inherit;
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.wpfaq-accordion__trigger:hover {
+	background-color: rgba( 0, 0, 0, 0.03 );
+}
+
+.wpfaq-accordion__trigger:active {
+	background-color: rgba( 0, 0, 0, 0.06 );
+}
+
+.wpfaq-accordion__trigger:focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: -2px;
+}
+
+.wpfaq-accordion__chevron {
+	flex-shrink: 0;
+	width: 0.5em;
+	height: 0.5em;
+	border-right: 2px solid currentColor;
+	border-bottom: 2px solid currentColor;
+	transform: rotate( 45deg );
+	transition: transform 180ms ease;
+}
+
+.wpfaq-accordion__trigger[aria-expanded="true"] .wpfaq-accordion__chevron {
+	transform: rotate( 225deg );
+}
+
+.wpfaq-accordion__panel {
+	padding: 0 1em 1em;
+	overflow-wrap: break-word;
+}
+
+.wpfaq-accordion__panel[hidden] {
+	display: none;
+}
+
+@media ( prefers-reduced-motion: reduce ) {
+	.wpfaq-accordion__chevron {
+		transition: none;
+	}
+}
