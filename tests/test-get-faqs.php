@@ -150,4 +150,64 @@ class WPFAQ_Get_Faqs_Test extends WC_Unit_Test_Case {
 	public function test_display_location_defaults_to_tab_for_invalid_product_id() {
 		$this->assertSame( 'tab', wpfaq_get_display_location( 0 ) );
 	}
+
+	/**
+	 * A product with no saved custom tabs returns an empty array.
+	 *
+	 * @return void
+	 */
+	public function test_get_custom_tabs_returns_empty_array_when_no_meta_saved() {
+		$this->assertSame( array(), wpfaq_get_custom_tabs( $this->product_id ) );
+	}
+
+	/**
+	 * Saved custom tabs are returned in stored order with their original shape.
+	 *
+	 * @return void
+	 */
+	public function test_get_custom_tabs_returns_saved_rows_in_order() {
+		$tabs = array(
+			array(
+				'title'   => 'Shipping',
+				'content' => 'Ships in 3 days.',
+			),
+			array(
+				'title'   => 'Returns',
+				'content' => '30-day returns.',
+			),
+		);
+
+		update_post_meta( $this->product_id, '_wpfaq_custom_tabs', $tabs );
+
+		$this->assertSame( $tabs, wpfaq_get_custom_tabs( $this->product_id ) );
+	}
+
+	/**
+	 * Rows missing a title or content key are dropped.
+	 *
+	 * @return void
+	 */
+	public function test_get_custom_tabs_drops_rows_missing_expected_keys() {
+		update_post_meta(
+			$this->product_id,
+			'_wpfaq_custom_tabs',
+			array(
+				array( 'title' => 'Only a title' ),
+				array(
+					'title'   => 'Kept tab',
+					'content' => 'Kept content.',
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array(
+					'title'   => 'Kept tab',
+					'content' => 'Kept content.',
+				),
+			),
+			wpfaq_get_custom_tabs( $this->product_id )
+		);
+	}
 }

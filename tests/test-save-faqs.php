@@ -47,7 +47,7 @@ class WPFAQ_Save_Faqs_Test extends WC_Unit_Test_Case {
 	 * @return void
 	 */
 	public function tearDown(): void {
-		unset( $_POST['wpfaq_faqs_nonce'], $_POST['wpfaq_faqs'] );
+		unset( $_POST['wpfaq_faqs_nonce'], $_POST['wpfaq_faqs'], $_POST['wpfaq_custom_tabs'], $_POST['wpfaq_display_location'] );
 		parent::tearDown();
 	}
 
@@ -281,5 +281,113 @@ class WPFAQ_Save_Faqs_Test extends WC_Unit_Test_Case {
 		$saved = get_post_meta( $this->product_id, '_wpfaq_faqs', true );
 
 		$this->assertCount( WPFAQ_Admin::MAX_ROWS, $saved );
+	}
+
+	/**
+	 * Valid custom tabs persist with sanitized fields.
+	 *
+	 * @return void
+	 */
+	public function test_valid_custom_tabs_are_saved() {
+		$this->set_valid_nonce();
+		$_POST['wpfaq_custom_tabs'] = array(
+			array(
+				'title'   => 'Shipping <script>alert(1)</script>',
+				'content' => '<p>Ships in 3 days.</p><script>alert(1)</script>',
+			),
+		);
+
+		$this->admin->save( $this->product_id );
+
+		$saved = get_post_meta( $this->product_id, '_wpfaq_custom_tabs', true );
+
+		$this->assertSame( 'Shipping', $saved[0]['title'] );
+		$this->assertSame( '<p>Ships in 3 days.</p>', $saved[0]['content'] );
+	}
+
+	/**
+	 * A custom tab with an empty title is dropped.
+	 *
+	 * @return void
+	 */
+	public function test_custom_tab_with_empty_title_is_dropped() {
+		$this->set_valid_nonce();
+		$_POST['wpfaq_custom_tabs'] = array(
+			array(
+				'title'   => '',
+				'content' => 'Some content.',
+			),
+			array(
+				'title'   => 'Kept tab',
+				'content' => 'Kept content.',
+			),
+		);
+
+		$this->admin->save( $this->product_id );
+
+		$saved = get_post_meta( $this->product_id, '_wpfaq_custom_tabs', true );
+
+		$this->assertCount( 1, $saved );
+		$this->assertSame( 'Kept tab', $saved[0]['title'] );
+	}
+
+	/**
+	 * A custom tab with empty content is dropped.
+	 *
+	 * @return void
+	 */
+	public function test_custom_tab_with_empty_content_is_dropped() {
+		$this->set_valid_nonce();
+		$_POST['wpfaq_custom_tabs'] = array(
+			array(
+				'title'   => 'Empty content tab',
+				'content' => '   ',
+			),
+		);
+
+		$this->admin->save( $this->product_id );
+
+		$saved = get_post_meta( $this->product_id, '_wpfaq_custom_tabs', true );
+
+		$this->assertSame( array(), $saved );
+	}
+
+	/**
+	 * A missing nonce leaves existing custom tab meta unchanged.
+	 *
+	 * @return void
+	 */
+	public function test_missing_nonce_leaves_custom_tabs_unchanged() {
+		update_post_meta(
+			$this->product_id,
+			'_wpfaq_custom_tabs',
+			array(
+				array(
+					'title'   => 'Existing tab',
+					'content' => 'Existing content.',
+				),
+			)
+		);
+
+		$_POST['wpfaq_custom_tabs'] = array(
+			array(
+				'title'   => 'New tab',
+				'content' => 'New content.',
+			),
+		);
+
+		$this->admin->save( $this->product_id );
+
+		$saved = get_post_meta( $this->product_id, '_wpfaq_custom_tabs', true );
+
+		$this->assertSame(
+			array(
+				array(
+					'title'   => 'Existing tab',
+					'content' => 'Existing content.',
+				),
+			),
+			$saved
+		);
 	}
 }
