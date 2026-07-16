@@ -1,0 +1,97 @@
+# Copyright (C) 2026 
+# This file is distributed under the MIT.
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce Product FAQ 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/woo-product-faq\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-07-16T20:53:30+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: woo-product-faq\n"
+
+#. Plugin Name of the plugin
+#: woo-product-faq.php
+msgid "WooCommerce Product FAQ"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: woo-product-faq.php
+msgid "https://github.com/thealirazadev/woo-product-faq"
+msgstr ""
+
+#. Description of the plugin
+#: woo-product-faq.php
+msgid "Adds per-product FAQs and custom tabs to WooCommerce products."
+msgstr ""
+
+#: includes/class-wpfaq-admin.php:96
+#: includes/class-wpfaq-admin.php:153
+#: includes/class-wpfaq-tabs.php:68
+#: templates/faq-accordion.php:31
+msgid "FAQ"
+msgstr ""
+
+#: includes/class-wpfaq-admin.php:142
+msgid "Display location"
+msgstr ""
+
+#: includes/class-wpfaq-admin.php:145
+msgid "Product tab"
+msgstr ""
+
+#: includes/class-wpfaq-admin.php:146
+msgid "After product summary"
+msgstr ""
+
+#: includes/class-wpfaq-admin.php:157
+msgid "Custom tabs"
+msgstr ""
+
+#: includes/class-wpfaq-admin.php:178
+msgid "No FAQs yet. Add your first question."
+msgstr ""
+
+#: includes/class-wpfaq-admin.php:200
+msgid "Add FAQ"
+msgstr ""
+
+#: includes/class-wpfaq-admin.php:223
+msgid "No custom tabs yet. Add your first tab."
+msgstr ""
+
+#: includes/class-wpfaq-admin.php:245
+msgid "Add custom tab"
+msgstr ""
+
+#: templates/admin-custom-tab-row.php:30
+msgid "Tab title"
+msgstr ""
+
+#: templates/admin-custom-tab-row.php:41
+msgid "Tab content"
+msgstr ""
+
+#: templates/admin-custom-tab-row.php:52
+msgid "Remove this tab"
+msgstr ""
+
+#: templates/admin-faq-row.php:30
+msgid "Question"
+msgstr ""
+
+#: templates/admin-faq-row.php:41
+msgid "Answer"
+msgstr ""
+
+#: templates/admin-faq-row.php:52
+msgid "Remove this FAQ"
+msgstr ""
+
+#: woo-product-faq.php:133
+msgid "WooCommerce Product FAQ requires WooCommerce to be installed and active."
+msgstr ""
