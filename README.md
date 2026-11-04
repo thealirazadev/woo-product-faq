@@ -56,7 +56,7 @@ woo-product-faq/
   woo-product-faq.php      Main plugin bootstrap (header, constants, includes, activation guard)
   uninstall.php           Removes plugin post meta on uninstall
   includes/               Orchestrator + admin/frontend/tabs classes + helper functions
-  templates/              Frontend accordion + custom tab markup, overridable by themes
+  templates/              Admin row, frontend accordion and custom tab markup
   assets/                 css/ and js/ for admin repeater and frontend accordion
   languages/              woo-product-faq.pot translation template
   tests/                  PHPUnit tests
