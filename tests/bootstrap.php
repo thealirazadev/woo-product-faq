@@ -61,6 +61,8 @@ require $wpfaq_tests_dir . '/includes/bootstrap.php';
 // The WooCommerce plugin download does not ship its test framework; see the fallback below.
 require __DIR__ . '/class-wc-unit-test-case-fallback.php';
 
-// Product capabilities (edit_product and friends) exist only after WooCommerce installs its roles,
-// which its own test framework normally does.
-WC_Install::create_roles();
+// Install WooCommerce the way its own test bootstrap does, then rebuild the roles object so
+// product capabilities (edit_product and friends) are visible on a fresh database.
+WC_Install::install();
+$GLOBALS['wp_roles'] = null; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- force a reload of roles after install.
+wp_roles();
