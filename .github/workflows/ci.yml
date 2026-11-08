@@ -41,7 +41,7 @@ jobs:
       - name: Install WooCommerce for the integration tests
         run: |
           curl -sSL -o /tmp/woocommerce.zip https://downloads.wordpress.org/plugin/woocommerce.latest-stable.zip
-          unzip -q /tmp/woocommerce.zip -d /tmp/wordpress/wp-content/plugins/
+          unzip -o -q /tmp/woocommerce.zip -d /tmp/wordpress/wp-content/plugins/
 
       - name: Tests
         run: composer test
