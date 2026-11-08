@@ -60,3 +60,7 @@ require $wpfaq_tests_dir . '/includes/bootstrap.php';
 
 // The WooCommerce plugin download does not ship its test framework; see the fallback below.
 require __DIR__ . '/class-wc-unit-test-case-fallback.php';
+
+// Product capabilities (edit_product and friends) exist only after WooCommerce installs its roles,
+// which its own test framework normally does.
+WC_Install::create_roles();
