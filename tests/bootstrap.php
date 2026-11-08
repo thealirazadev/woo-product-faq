@@ -57,3 +57,6 @@ function wpfaq_tests_load_plugin() {
 tests_add_filter( 'muplugins_loaded', 'wpfaq_tests_load_plugin' );
 
 require $wpfaq_tests_dir . '/includes/bootstrap.php';
+
+// The WooCommerce plugin download does not ship its test framework; see the fallback below.
+require __DIR__ . '/class-wc-unit-test-case-fallback.php';
