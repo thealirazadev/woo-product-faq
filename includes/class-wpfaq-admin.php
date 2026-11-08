@@ -339,7 +339,7 @@ final class WPFAQ_Admin {
 			}
 
 			$wpfaq_question = isset( $wpfaq_raw_row['question'] ) ? sanitize_text_field( $wpfaq_raw_row['question'] ) : '';
-			$wpfaq_answer   = isset( $wpfaq_raw_row['answer'] ) ? wp_kses_post( $wpfaq_raw_row['answer'] ) : '';
+			$wpfaq_answer   = isset( $wpfaq_raw_row['answer'] ) ? wpfaq_sanitize_rich_text( $wpfaq_raw_row['answer'] ) : '';
 
 			if ( '' === trim( $wpfaq_question ) && '' === trim( wp_strip_all_tags( $wpfaq_answer ) ) ) {
 				continue;
@@ -374,7 +374,7 @@ final class WPFAQ_Admin {
 			}
 
 			$wpfaq_title   = isset( $wpfaq_raw_tab['title'] ) ? sanitize_text_field( $wpfaq_raw_tab['title'] ) : '';
-			$wpfaq_content = isset( $wpfaq_raw_tab['content'] ) ? wp_kses_post( $wpfaq_raw_tab['content'] ) : '';
+			$wpfaq_content = isset( $wpfaq_raw_tab['content'] ) ? wpfaq_sanitize_rich_text( $wpfaq_raw_tab['content'] ) : '';
 
 			if ( '' === trim( $wpfaq_title ) || '' === trim( wp_strip_all_tags( $wpfaq_content ) ) ) {
 				continue;

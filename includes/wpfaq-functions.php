@@ -173,3 +173,17 @@ function wpfaq_load_textdomain() {
 		);
 	}
 }
+
+/**
+ * Sanitizes merchant-entered rich text.
+ *
+ * Script and style elements are removed together with their contents first, because
+ * wp_kses_post() drops the tags but keeps the text between them.
+ *
+ * @param string $html Raw HTML.
+ * @return string Allowed post HTML.
+ */
+function wpfaq_sanitize_rich_text( $html ) {
+	$html = preg_replace( '@<(script|style)[^>]*?>.*?</\\1>@si', '', (string) $html );
+	return wp_kses_post( $html );
+}
