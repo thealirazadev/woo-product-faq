@@ -78,7 +78,7 @@ woo-product-faq/
     test-get-faqs.php              Data helper tests
     test-tabs.php                  Tab registration tests
 
-  docs/                            Planning + handoff documentation (this folder)
+  docs/                            Architecture, design, testing, and design decisions
   README.md                        Root project doc
 ```
 

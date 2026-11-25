@@ -47,7 +47,7 @@ A WooCommerce plugin that lets store owners attach FAQ (question/answer) pairs t
 
 - Run the full PHP test suite: `composer run test` (wraps `vendor/bin/phpunit`).
 - Lint must pass and tests must be green before any feature is considered done (see `docs/testing.md`).
-- Manual QA checklists live in `docs/phases.md` and must be walked before shipping a phase.
+- The manual QA checklist lives in `docs/testing.md`.
 
 ## Project structure
 
@@ -60,8 +60,15 @@ woo-product-faq/
   assets/                 css/ and js/ for admin repeater and frontend accordion
   languages/              woo-product-faq.pot translation template
   tests/                  PHPUnit tests
-  docs/                   Planning and handoff documentation
+  docs/                   Architecture, design, testing, and design decisions
 ```
+
+## Documentation
+
+- [docs/architecture.md](docs/architecture.md): components, data flow, and data model.
+- [docs/design.md](docs/design.md): accordion and admin editor UI behavior and accessibility.
+- [docs/testing.md](docs/testing.md): automated tests, CI, and the manual QA checklist.
+- [docs/decisions.md](docs/decisions.md): the main design decisions and the reasons behind them.
 
 ## License
 
