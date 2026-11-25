@@ -75,7 +75,7 @@ function wpfaq_has_active_woocommerce() {
 /**
  * Prevents activation when WooCommerce is unavailable.
  *
- * activate_plugin() adds this plugin to the active list after the activation hook returns, so
+ * WordPress core activate_plugin() adds this plugin to the active list after the activation hook returns, so
  * calling deactivate_plugins() from here is undone straight away and the plugin ends up active.
  * Stopping the request with wp_die() is what actually keeps it inactive: the active list is never
  * written, and WordPress shows the message on the plugin activation error screen.
