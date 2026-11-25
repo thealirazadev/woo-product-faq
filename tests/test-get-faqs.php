@@ -246,4 +246,24 @@ class WPFAQ_Get_Faqs_Test extends WC_Unit_Test_Case {
 			wpfaq_get_custom_tabs( $this->product_id )
 		);
 	}
+
+	/**
+	 * A non-array custom tabs meta value is treated as no tabs.
+	 *
+	 * @return void
+	 */
+	public function test_get_custom_tabs_returns_empty_array_when_meta_is_malformed() {
+		update_post_meta( $this->product_id, '_wpfaq_custom_tabs', 'not-an-array' );
+
+		$this->assertSame( array(), wpfaq_get_custom_tabs( $this->product_id ) );
+	}
+
+	/**
+	 * A zero or invalid product id returns no custom tabs.
+	 *
+	 * @return void
+	 */
+	public function test_get_custom_tabs_returns_empty_array_for_invalid_product_id() {
+		$this->assertSame( array(), wpfaq_get_custom_tabs( 0 ) );
+	}
 }
