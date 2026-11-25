@@ -5,7 +5,7 @@
 This is a self-contained WordPress plugin. There is no separate backend service or SPA. Behavior is split across three lifecycle contexts, all bootstrapped from one main plugin file.
 
 1. Bootstrap (`woo-product-faq.php`): defines constants, checks that WooCommerce is active, loads the text domain, requires the `includes/` files, and instantiates the orchestrator `WPFAQ_Plugin` on `plugins_loaded`.
-2. Admin (product edit screen): `WPFAQ_Admin` adds a "FAQ" tab and panel to the WooCommerce product data metabox, renders the repeatable FAQ rows, the display-location select, and the repeatable custom-tabs rows, enqueues `assets/js/admin.js` + `assets/css/admin.css`, and handles saving on `woocommerce_process_product_meta` with a nonce check, capability check, and sanitization.
+2. Admin (product edit screen): `WPFAQ_Admin` adds a "FAQ" tab and panel to the WooCommerce product data metabox, renders the repeatable FAQ rows, the display-location select, and the repeatable custom-tabs rows, enqueues `assets/js/admin.js` (the rows are built from WooCommerce's `woocommerce_wp_*` field helpers and core Dashicons, so the plugin ships no admin stylesheet), and handles saving on `woocommerce_process_product_meta` with a nonce check, capability check, and sanitization.
 3. Frontend (single product page): `WPFAQ_Frontend` enqueues `assets/js/frontend.js` + `assets/css/frontend.css` only on product pages, and renders the accordion. `WPFAQ_Tabs` filters `woocommerce_product_tabs` to add the FAQ tab (when display location is "Product tab") and any custom tabs. When display location is "After product summary", `WPFAQ_Frontend` renders the accordion on `woocommerce_after_single_product_summary`.
 
 Admin write flow:
@@ -63,7 +63,6 @@ woo-product-faq/
 
   assets/
     css/
-      admin.css                    Repeater layout, drag handle, remove button
       frontend.css                 Accordion collapsed/expanded/hover/focus states, transitions
     js/
       admin.js                     Add/remove rows, jQuery UI Sortable reorder, reindex field names
@@ -118,7 +117,7 @@ Meta key reference (all underscore-prefixed so they stay out of the default cust
 
 ## External dependencies and required env vars
 
-- Runtime dependency: WooCommerce must be active (checked at bootstrap; activation is blocked with an admin notice otherwise).
+- Runtime dependency: WooCommerce must be active (activation is refused with a `wp_die()` message otherwise, and a runtime check at bootstrap shows an admin notice and skips loading if it later goes away).
 - Bundled-with-WordPress dependency: jQuery and jQuery UI Sortable (admin only).
 - Dev dependencies (Composer): `squizlabs/php_codesniffer`, `wp-coding-standards/wpcs`, `phpcompatibility/phpcompatibility-wp`, `phpunit/phpunit`, and the WordPress test-suite scaffolding.
 - Environment variables: none. This plugin has no `.env` and reads no secrets. All configuration is per-product post meta set through the WooCommerce product editor.

@@ -14,7 +14,7 @@ The FAQ panel has one select with two values. Both the save handler and `wpfaq_g
 
 ## 4. Rows are normalized on the server, never trusted from the client
 
-Submitted rows are walked in order, sanitized (`sanitize_text_field` for questions and titles, rich text for answers and content), stripped of empty entries and reindexed with `array_values`, so gaps left by removed rows never persist. Each list is capped at `WPFAQ_Admin::MAX_ROWS` (50) to bound the size of a single meta value. The emptiness rule differs on purpose: a FAQ row is dropped only when both question and answer are blank, while a custom tab is dropped when either the title or the content is blank, because a tab without a title or without content is useless on the product page. The answer and content checks run on `wp_strip_all_tags()` output, so a value that is only markup counts as empty.
+Submitted rows are walked in order, sanitized (`sanitize_text_field` for questions and titles, rich text for answers and content), stripped of empty entries and reindexed with `array_values`, so gaps left by removed rows never persist. Each list is capped at `WPFAQ_Admin::MAX_ROWS` (50) to bound the size of a single meta value. The emptiness rule differs on purpose: a FAQ row is dropped only when both question and answer are blank, while a custom tab is dropped when either the title or the content is blank, because a tab without a title or without content is useless on the product page. The answer and content checks run on `wp_strip_all_tags()` output, so a value that is only markup counts as empty. A FAQ row saved with an answer but no question stays in the editor so the merchant does not lose it, but `wpfaq_get_faqs()` skips it on the product page, because the accordion would otherwise render a button with no text and no accessible name.
 
 ## 5. Rich text drops script and style contents, not just their tags
 
@@ -30,7 +30,7 @@ Reordering uses jQuery UI Sortable, which WordPress already bundles, with an exp
 
 ## 8. The plugin refuses to run without WooCommerce
 
-On activation, `wpfaq_activate()` checks the site and network active plugin lists for WooCommerce and deactivates the plugin with an admin notice if it is missing. At runtime, `plugins_loaded` priority 1 shows the notice if WooCommerce has gone away, and the boot at priority 20 returns before any class file is loaded. This turns a missing dependency into a notice instead of a fatal error on every request.
+On activation, `wpfaq_activate()` checks the site and network active plugin lists for WooCommerce and, if it is missing, stops the request with `wp_die()`, so WordPress shows the reason on its activation error screen and never adds the plugin to the active list. The first version called `deactivate_plugins()` and queued an admin notice instead, but `activate_plugin()` appends the plugin to the active list after the activation hook returns, so the plugin stayed active and the notice was lost in the redirect. At runtime, `plugins_loaded` priority 1 shows the notice if WooCommerce has gone away, and the boot at priority 20 returns before any class file is loaded. This turns a missing dependency into a notice instead of a fatal error on every request.
 
 ## 9. Errors go to a debug-only log, never to shoppers
 

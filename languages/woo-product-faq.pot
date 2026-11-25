@@ -92,6 +92,11 @@ msgstr ""
 msgid "Remove this FAQ"
 msgstr ""
 
-#: woo-product-faq.php:133
+#: woo-product-faq.php:93
+#: woo-product-faq.php:126
 msgid "WooCommerce Product FAQ requires WooCommerce to be installed and active."
+msgstr ""
+
+#: woo-product-faq.php:94
+msgid "Plugin activation failed"
 msgstr ""

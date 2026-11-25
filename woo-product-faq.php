@@ -75,6 +75,11 @@ function wpfaq_has_active_woocommerce() {
 /**
  * Prevents activation when WooCommerce is unavailable.
  *
+ * WordPress core activate_plugin() adds this plugin to the active list after the activation hook returns, so
+ * calling deactivate_plugins() from here is undone straight away and the plugin ends up active.
+ * Stopping the request with wp_die() is what actually keeps it inactive: the active list is never
+ * written, and WordPress shows the message on the plugin activation error screen.
+ *
  * @return void
  */
 function wpfaq_activate() {
@@ -84,23 +89,11 @@ function wpfaq_activate() {
 
 	wpfaq_log( 'Plugin activation was rejected because WooCommerce was unavailable.' );
 
-	if ( ! function_exists( 'deactivate_plugins' ) ) {
-		$wpfaq_plugin_functions = ABSPATH . 'wp-admin/includes/plugin.php';
-
-		if ( is_readable( $wpfaq_plugin_functions ) ) {
-			require_once $wpfaq_plugin_functions;
-		} else {
-			wpfaq_log( 'The WordPress plugin functions file was unavailable during activation.' );
-		}
-	}
-
-	if ( function_exists( 'deactivate_plugins' ) ) {
-		deactivate_plugins( plugin_basename( __FILE__ ), true );
-	} else {
-		wpfaq_log( 'WordPress could not deactivate the plugin after a rejected activation.' );
-	}
-
-	add_action( 'admin_notices', 'wpfaq_render_dependency_notice' );
+	wp_die(
+		esc_html__( 'WooCommerce Product FAQ requires WooCommerce to be installed and active.', 'woo-product-faq' ),
+		esc_html__( 'Plugin activation failed', 'woo-product-faq' ),
+		array( 'back_link' => true )
+	);
 }
 
 /**
