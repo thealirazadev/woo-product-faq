@@ -103,6 +103,42 @@ class WPFAQ_Get_Faqs_Test extends WC_Unit_Test_Case {
 	}
 
 	/**
+	 * Rows with a blank question are skipped, since they would render as an unlabeled button.
+	 *
+	 * @return void
+	 */
+	public function test_skips_rows_with_a_blank_question() {
+		update_post_meta(
+			$this->product_id,
+			'_wpfaq_faqs',
+			array(
+				array(
+					'question' => '',
+					'answer'   => 'An answer with no question.',
+				),
+				array(
+					'question' => '   ',
+					'answer'   => 'Whitespace question.',
+				),
+				array(
+					'question' => 'Kept question?',
+					'answer'   => 'Kept answer.',
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array(
+					'question' => 'Kept question?',
+					'answer'   => 'Kept answer.',
+				),
+			),
+			wpfaq_get_faqs( $this->product_id )
+		);
+	}
+
+	/**
 	 * A zero or invalid product id returns an empty array without a lookup.
 	 *
 	 * @return void

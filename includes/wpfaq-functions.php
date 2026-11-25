@@ -65,7 +65,11 @@ function wpfaq_get_template( $template_name, $args = array() ) {
 }
 
 /**
- * Reads the saved FAQ rows for a product.
+ * Reads the saved FAQ rows for a product, ready to display.
+ *
+ * The save handler keeps a row whose question is blank as long as it has an answer, so a
+ * half-written row is not lost in the editor. Such a row is skipped here: the accordion would
+ * render it as a button with no text, which has no accessible name and nothing to click on.
  *
  * @param int $product_id Product post ID.
  * @return array List of ['question' => string, 'answer' => string], empty when none saved.
@@ -87,6 +91,10 @@ function wpfaq_get_faqs( $product_id ) {
 
 	foreach ( $wpfaq_faqs as $wpfaq_faq ) {
 		if ( ! is_array( $wpfaq_faq ) || ! isset( $wpfaq_faq['question'], $wpfaq_faq['answer'] ) ) {
+			continue;
+		}
+
+		if ( '' === trim( (string) $wpfaq_faq['question'] ) ) {
 			continue;
 		}
 
