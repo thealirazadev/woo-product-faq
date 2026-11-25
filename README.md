@@ -33,7 +33,7 @@ A WooCommerce plugin that lets store owners attach FAQ (question/answer) pairs t
 
 1. Copy or clone this repository into `wp-content/plugins/woo-product-faq` of a WordPress install.
 2. From the plugin directory, install dev dependencies: `composer install`.
-3. In WordPress admin, activate "WooCommerce Product FAQ" from Plugins. Activation is blocked with an admin notice if WooCommerce is not active.
+3. In WordPress admin, activate "WooCommerce Product FAQ" from Plugins. Activation is refused with an error message if WooCommerce is not active, and an admin notice appears if WooCommerce is deactivated later.
 
 ## Run / build
 
@@ -56,7 +56,7 @@ woo-product-faq/
   woo-product-faq.php      Main plugin bootstrap (header, constants, includes, activation guard)
   uninstall.php           Removes plugin post meta on uninstall
   includes/               Orchestrator + admin/frontend/tabs classes + helper functions
-  templates/              Frontend accordion + custom tab markup, overridable by themes
+  templates/              Frontend accordion, custom tab, and admin row markup
   assets/                 css/ and js/ for admin repeater and frontend accordion
   languages/              woo-product-faq.pot translation template
   tests/                  PHPUnit tests
